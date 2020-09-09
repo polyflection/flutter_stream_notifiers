@@ -1,6 +1,6 @@
 name: flutter_stream_notifiers
 description: Provides a bunch of special notifiers derived from Flutter's ValueNotifier or ChangeNotifier, that additionally streams a value or notifier itself on a change notification.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/polyflection/flutter_stream_notifiers
 
 environment:
