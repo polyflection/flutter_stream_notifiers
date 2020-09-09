@@ -1,8 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'mixins.dart';
 
-export 'package:flutter/widgets.dart';
-
 /// A [ValueNotifier] with [ValueStream].
 class ValueStreamNotifier<T> = ValueNotifier<T> with ValueStream<T>;
 
