@@ -69,8 +69,7 @@ void main() {
       target.stream.listen(null, onDone: () {
         isOnDoneCalled2 = true;
       });
-      target.dispose();
-      await pumpEventQueue();
+      await target.dispose();
       expect(isOnDoneCalled1, isTrue);
       expect(isOnDoneCalled2, isTrue);
     });
@@ -79,14 +78,14 @@ void main() {
         'An internal stream controllers is null on dispose, and never be changed.',
         () async {
       target.stream.listen(null);
-      target.dispose();
+      await target.dispose();
       expect(target.controllers, isNull);
       target.stream.listen(null);
       expect(target.controllers, isNull);
     });
 
     test('After the disposing, a new Stream is closed immediately.', () async {
-      target.dispose();
+      await target.dispose();
 
       final emits = [];
       var isOnDoneCalled = false;
@@ -97,6 +96,13 @@ void main() {
       await pumpEventQueue();
       expect(emits, isEmpty);
       expect(isOnDoneCalled, isTrue);
+    });
+
+    test(
+        'Apply to a derived ValueNotifier that overrides return Type of dispose() with Future<void>',
+        () async {
+      final target = _FutureDisposingValueStreamNotifier<int>(0);
+      expect(target.dispose() is Future<void>, isTrue);
     });
   });
 
@@ -189,8 +195,7 @@ void main() {
       target.stream.listen(null, onDone: () {
         isOnDoneCalled2 = true;
       });
-      target.dispose();
-      await pumpEventQueue();
+      await target.dispose();
       expect(isOnDoneCalled1, isTrue);
       expect(isOnDoneCalled2, isTrue);
     });
@@ -199,14 +204,14 @@ void main() {
         'An internal stream controllers is null on dispose, and never be changed.',
         () async {
       target.stream.listen(null);
-      target.dispose();
+      await target.dispose();
       expect(target.controllers, isNull);
       target.stream.listen(null);
       expect(target.controllers, isNull);
     });
 
     test('After disposing, a new Stream is closed immediately.', () async {
-      target.dispose();
+      await target.dispose();
 
       final emits = [];
       var isOnDoneCalled = false;
@@ -218,6 +223,13 @@ void main() {
       expect(emits, isEmpty);
       expect(isOnDoneCalled, isTrue);
     });
+
+    test(
+        'Apply to a derived ChangeNotifier that overrides return Type of dispose() with Future<void>',
+        () async {
+      final target = _FutureDisposingChangeStreamNotifier(0);
+      expect(target.dispose() is Future<void>, isTrue);
+    });
   });
 }
 
@@ -226,6 +238,37 @@ class _DerivedValueNotifier<T> = ValueNotifier<T> with ValueStream<T>;
 class _DerivedChangeStreamNotifier
     extends ChangeStreamNotifier<_DerivedChangeStreamNotifier> {
   _DerivedChangeStreamNotifier(this._i);
+  int _i;
+  int get i => _i;
+  void increment() {
+    _i++;
+    notifyListeners();
+  }
+}
+
+class _FutureDisposingValueNotifier<T> extends ValueNotifier<T> {
+  _FutureDisposingValueNotifier(T value) : super(value);
+  @override
+  Future<void> dispose() {
+    super.dispose();
+    return Future.value();
+  }
+}
+
+class _FutureDisposingValueStreamNotifier<T> = _FutureDisposingValueNotifier<T>
+    with ValueStream<T>;
+
+class _FutureDisposingChangeNotifier extends ChangeNotifier {
+  @override
+  Future<void> dispose() {
+    super.dispose();
+    return Future.value();
+  }
+}
+
+class _FutureDisposingChangeStreamNotifier
+    extends ChangeStreamNotifier<_FutureDisposingChangeNotifier> {
+  _FutureDisposingChangeStreamNotifier(this._i);
   int _i;
   int get i => _i;
   void increment() {

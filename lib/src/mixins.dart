@@ -34,12 +34,8 @@ mixin ValueStream<T> on ValueNotifier<T> {
   /// Do super.dispose and close all the streams.
   ///
   /// The returned future completes when the all streams are closed.
-  ///
-  /// The return type is FutureOr<void>, because it respects the super class's
-  /// behavior. By FutureOr<void>, No "unawaited_futures" static warning
-  /// is reported if a client does not add "await" keyword.
   @override
-  FutureOr<void> dispose() {
+  Future<void> dispose() {
     super.dispose();
 
     final controllers = this.controllers;
@@ -92,12 +88,8 @@ mixin ChangeNotifierStream<T extends ChangeNotifier> on ChangeNotifier {
   /// Do super.dispose and close all the streams.
   ///
   /// The returned future completes when the all streams are closed.
-  ///
-  /// The return type is FutureOr<void>, because it respects the super class's
-  /// behavior. By FutureOr<void>, No "unawaited_futures" static warning
-  /// is reported if a client does not add "await" keyword.
   @override
-  FutureOr<void> dispose() {
+  Future<void> dispose() {
     super.dispose();
 
     final controllers = this.controllers;
