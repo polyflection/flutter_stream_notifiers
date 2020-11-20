@@ -35,22 +35,22 @@ mixin ValueStream<T> on ValueNotifier<T> {
   ///
   /// The returned future completes when the all streams are closed.
   @override
-  Future<void> dispose() {
+  Future<void> dispose() async {
     super.dispose();
 
-    final controllers = this.controllers;
-    this.controllers = null;
+    _isDisposed = true;
 
-    return Future.wait(controllers.map((c) {
+    await Future.wait(controllers.map((c) {
       c.onCancel = null;
       return c.close();
     }));
+    controllers.clear();
   }
 
   @visibleForTesting
   // ignore: public_member_api_docs
-  Set<MultiStreamController<T>> controllers = {};
-  bool get _isDisposed => controllers == null;
+  final Set<MultiStreamController<T>> controllers = {};
+  bool _isDisposed = false;
 }
 
 /// A mixin on [ChangeNotifier] that streams a [T] extending [ChangeNotifier]
@@ -89,20 +89,20 @@ mixin ChangeNotifierStream<T extends ChangeNotifier> on ChangeNotifier {
   ///
   /// The returned future completes when the all streams are closed.
   @override
-  Future<void> dispose() {
+  Future<void> dispose() async {
     super.dispose();
 
-    final controllers = this.controllers;
-    this.controllers = null;
+    _isDisposed = true;
 
-    return Future.wait(controllers.map((c) {
+    await Future.wait(controllers.map((c) {
       c.onCancel = null;
       return c.close();
     }));
+    controllers.clear();
   }
 
   @visibleForTesting
   // ignore: public_member_api_docs
-  Set<MultiStreamController<T>> controllers = {};
-  bool get _isDisposed => controllers == null;
+  final Set<MultiStreamController<T>> controllers = {};
+  bool _isDisposed = false;
 }
